@@ -1,0 +1,96 @@
+version: '3'
+
+services:
+  client-service:
+    container_name: "client"
+    build:
+      context: ./client/.
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+    ports:
+      - ${CLIENT_APP_EXTERNAL_PORT}:${CLIENT_APP_INTERNAL_PORT}
+    networks:
+      - mynetwork
+    depends_on:
+      - api
+
+  api:
+    container_name: "api"
+    build:
+      context: ./api/.
+      dockerfile: Dockerfile
+    environment:
+      - SERVICE_NAME=api
+      - PORT=${API_SERVER_INTERNAL_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_CHANNEL=${REDIS_CHANNEL}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USERNAME=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_TABLE=${MYSQL_TABLE}
+    ports:
+      - ${API_SERVER_FIRST_EXTERNAL_PORT}:${API_SERVER_INTERNAL_PORT}
+    networks:
+      - mynetwork
+    volumes:
+      - ./api/:/src/api
+      - static:/src/api/static
+      - media:/src/api/media
+    depends_on:
+      - db
+      - redis
+
+  db:
+    container_name: "db"
+    build: ./db/.
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - '${MYSQL_PORT_EXTERNAL}:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - mynetwork
+
+  redis:
+    container_name: "redis"
+    image: "redis:latest"
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass mypassword
+    ports:
+      - '${REDIS_PORT}:6379'
+    networks:
+      - mynetwork
+
+  nginx:
+    container_name: nginx_server
+    build:
+      context: ./nginx/.
+      dockerfile: Dockerfile
+    ports:
+      - ${NGINX_EXTERNAL_PORT}:${NGINX_INTERNAL_PORT}
+    environment:
+      - CLIENT_APP_INTERNAL_PORT=${CLIENT_APP_INTERNAL_PORT}
+      - API_SERVER_INTERNAL_PORT=${API_SERVER_INTERNAL_PORT}
+    restart: always
+    networks:
+      - mynetwork
+    volumes:
+      - static:/src/api/static
+      - media:/src/api/media
+    depends_on:
+      - client-service
+      - api
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  media:
+  static:

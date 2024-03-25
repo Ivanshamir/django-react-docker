@@ -1,0 +1,35 @@
+# Ignore Python compiled files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+
+# Ignore test and documentation directories
+/tests
+/docs
+
+# Ignore Git and GitHub files
+.git
+.gitignore
+.github
+
+# Ignore virtual environment directories
+venv
+.env
+
+# Ignore log files
+*.log
+
+# Ignore all .json files
+*.json
+
+# Ignore all .csv files
+*.csv
+
+# Ignore Docker files
+Dockerfile
+.dockerignore
+
+# Ignore local configuration files
+local_settings.py

@@ -1,0 +1,39 @@
+events {
+    # empty placeholder
+}
+
+
+http {
+
+    server {
+        listen 80;
+
+        # Serve static files from shared volumn 
+        location /api_static/ {
+            alias /src/api/static;
+        }
+
+        # Serve media files from shared volumn
+        location /api_media/ {
+            alias /src/api/media;
+        }
+
+        location / {
+            proxy_pass http://frontend;
+        }
+
+        location ~ ^/(admin|api|ws) {
+            proxy_pass http://backend;
+            proxy_redirect default;
+        }
+    }
+
+    upstream frontend {
+        server client-service:${CLIENT_APP_INTERNAL_PORT};
+    }
+
+    upstream backend {
+        server api:${API_SERVER_INTERNAL_PORT};
+       # server api-service-2:${API_SERVER_INTERNAL_PORT};
+    }
+}

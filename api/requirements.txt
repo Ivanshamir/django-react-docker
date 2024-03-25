@@ -1,0 +1,10 @@
+asgiref==3.8.1
+Django==5.0.3
+django-redis==5.4.0
+django-rest-framework==0.1.0
+djangorestframework==3.15.1
+mysqlclient==2.2.0
+python-decouple==3.8
+setuptools==68.2.2
+sqlparse==0.4.4
+wheel==0.41.2
