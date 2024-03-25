@@ -33,7 +33,7 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_TABLE=${MYSQL_TABLE}
     ports:
-      - ${API_SERVER_FIRST_EXTERNAL_PORT}:${API_SERVER_INTERNAL_PORT}
+      - ${API_SERVER_EXTERNAL_PORT}:${API_SERVER_INTERNAL_PORT}
     networks:
       - mynetwork
     volumes:
